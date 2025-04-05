@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = ">=3.0.2"
+pydantic = ">=2.11.0"
+pydantic-settings = ">=2.8.0"
+python-dotenv = ">=1.1.0"
+gunicorn = ">=21.2.0"
+numpy = ">=2.2.4"
+
+[dev-packages]
+setuptools = ">=78.1.0"
+wheel = ">=0.45.0"
+pytest = ">=8.3.5"
+pytest-cov = ">=4.1.0"
+black = ">=25.1.0"
+isort = ">=6.0.1"
+mypy = ">=1.15.0"
+flake8 = ">=7.2.0"
+
+[requires]
+python_version = "3.13"
+
+[scripts]
+start = "PYTHONPATH=$PYTHONPATH:. flask run"
+install = "pip install -e ."
+test = "pytest"
+lint = "flake8 src/ tests/"
+format = "black src/ tests/ && isort src/ tests/"
+typecheck = "mypy src/ tests/"

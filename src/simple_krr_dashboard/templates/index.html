@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} v{{ app_version }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .version-text {
+            font-style: italic;
+            font-size: 0.6em;
+        }
+
+        .table td {
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 200px;
+        }
+
+        .table th {
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header">
+            <div class="header-title">
+                <h1>{{ app_name }} <span class="version-text">(v{{ app_version }})</span></h1>
+                <small class="text-muted">Cluster: {{ kubernetes_cluster_name }}</small>
+            </div>
+            <div class="theme-toggle-container">
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+            </div>
+        </div>
+
+        <div class="search-filters">
+            <div class="search-container">
+                <input type="text" class="form-control" id="searchInput" placeholder="Write a container name or namespace...">
+            </div>
+            <div class="filter-container">
+                <select class="form-select" id="statusFilter">
+                    <option value="all">Filter by Status</option>
+                    <option value="GOOD">Good</option>
+                    <option value="WARNING">Warning</option>
+                    <option value="CRITICAL">Critical</option>
+                    <option value="OK">OK</option>
+                </select>
+                <select class="form-select" id="namespaceFilter">
+                    <option value="all">Filter by Namespace</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Namespace</th>
+                        <th class="sortable" data-sort="pods">Pods <span class="sort-icon"></span></th>
+                        <th>Old Pods</th>
+                        <th>Type</th>
+                        <th>Container</th>
+                        <th class="sortable" data-sort="severity">Severity <span class="sort-icon"></span></th>
+                        <th class="sortable" data-sort="cpuDiff">CPU Diff <span class="sort-icon"></span></th>
+                        <th>CPU Requests</th>
+                        <th>CPU Limits</th>
+                        <th class="sortable" data-sort="memoryDiff">Memory Diff <span class="sort-icon"></span></th>
+                        <th>Memory Requests</th>
+                        <th>Memory Limits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentTheme = '{{ theme }}';
+        let data = [];
+        let currentSort = {
+            column: null,
+            direction: 'asc'
+        };
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data');
+                data = await response.json();
+                updateTable();
+                updateNamespaceFilter();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function updateNamespaceFilter() {
+            const namespaces = [...new Set(data.map(item => item.namespace))].sort();
+            const select = document.getElementById('namespaceFilter');
+            select.innerHTML = '<option value="all">Filter by Namespace</option>';
+            namespaces.forEach(ns => {
+                if (ns && ns.trim() !== '') {
+                    select.innerHTML += `<option value="${ns}">${ns}</option>`;
+                }
+            });
+        }
+
+        function sortData(data, column, direction) {
+            return [...data].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                if (['pods', 'oldPods', 'cpuDiff', 'cpuRequests', 'cpuLimits', 'memoryDiff', 'memoryRequests', 'memoryLimits'].includes(column)) {
+                    aVal = parseFloat(aVal) || 0;
+                    bVal = parseFloat(bVal) || 0;
+                }
+
+                if (aVal === null || aVal === undefined) aVal = '';
+                if (bVal === null || bVal === undefined) bVal = '';
+
+                aVal = String(aVal).toLowerCase();
+                bVal = String(bVal).toLowerCase();
+
+                if (direction === 'asc') {
+                    return aVal.localeCompare(bVal);
+                } else {
+                    return bVal.localeCompare(aVal);
+                }
+            });
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.textContent = '';
+            });
+
+            if (currentSort.column) {
+                const currentIcon = document.querySelector(`th[data-sort="${currentSort.column}"] .sort-icon`);
+                currentIcon.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+            }
+        }
+
+        function handleSort(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            updateSortIcons();
+            updateTable();
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const namespaceFilter = document.getElementById('namespaceFilter').value;
+
+            let filteredData = data.filter(item => {
+                const matchesSearch = !searchTerm ||
+                    (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+                    (item.namespace && item.namespace.toLowerCase().includes(searchTerm));
+                const matchesStatus = statusFilter === 'all' || item.severity === statusFilter;
+                const matchesNamespace = namespaceFilter === 'all' || item.namespace === namespaceFilter;
+                return matchesSearch && matchesStatus && matchesNamespace;
+            });
+
+            if (currentSort.column) {
+                filteredData = sortData(filteredData, currentSort.column, currentSort.direction);
+            }
+
+            return filteredData;
+        }
+
+        function updateTable() {
+            const tbody = document.querySelector('#dataTable tbody');
+            const filteredData = filterData();
+
+            tbody.innerHTML = filteredData.map(item => `
+                <tr>
+                    <td>${item.name || ''}</td>
+                    <td>${item.namespace || ''}</td>
+                    <td>${item.pods || ''}</td>
+                    <td>${item.oldPods || ''}</td>
+                    <td>${item.type || ''}</td>
+                    <td>${item.container || ''}</td>
+                    <td><span class="badge badge-${item.severity}">${item.severity || ''}</span></td>
+                    <td>${item.cpuDiff || ''}</td>
+                    <td>${item.cpuRequests || ''}</td>
+                    <td>${item.cpuLimits || ''}</td>
+                    <td>${item.memoryDiff || ''}</td>
+                    <td>${item.memoryRequests || ''}</td>
+                    <td>${item.memoryLimits || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function toggleTheme() {
+            try {
+                const response = await fetch('/api/theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ theme: currentTheme }),
+                });
+                const result = await response.json();
+                currentTheme = result.theme;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                document.getElementById('themeToggle').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            } catch (error) {
+                console.error('Error toggling theme:', error);
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', updateTable);
+        document.getElementById('statusFilter').addEventListener('change', updateTable);
+        document.getElementById('namespaceFilter').addEventListener('change', updateTable);
+
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                handleSort(header.dataset.sort);
+            });
+        });
+
+        fetchData();
+    </script>
+</body>
+</html>
