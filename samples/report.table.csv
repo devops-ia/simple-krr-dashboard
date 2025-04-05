@@ -1,0 +1,13 @@
+Namespace,Name,Pods,Old Pods,Type,Container,Severity,CPU Diff,CPU Requests,CPU Limits,Memory Diff,Memory Requests,Memory Limits
+monitoring,grafana,1,10,Deployment,grafana,GOOD,+15m,(+15m) 10m -> 25m,unset,+50Mi,(+50Mi) 100Mi -> 150Mi,200Mi -> 150Mi
+monitoring,prometheus,1,3,Deployment,prometheus,OK,+45m,(+45m) 100m -> 145m,unset,+200Mi,(+200Mi) 512Mi -> 712Mi,1024Mi -> 712Mi
+monitoring,alertmanager,1,4,Deployment,alertmanager,WARNING,-30m,(-30m) 100m -> 70m,unset,-100Mi,(-100Mi) 256Mi -> 156Mi,512Mi -> 156Mi
+logging,elasticsearch,3,8,StatefulSet,elasticsearch,CRITICAL,+150m,(+50m) 500m -> 550m,unset,+1024Mi,(+341Mi) 2048Mi -> 2389Mi,4096Mi -> 2389Mi
+logging,kibana,1,2,Deployment,kibana,GOOD,+10m,(+10m) 100m -> 110m,unset,+50Mi,(+50Mi) 256Mi -> 306Mi,512Mi -> 306Mi
+logging,filebeat,12,24,DaemonSet,filebeat,OK,+5m,(+5m) 10m -> 15m,unset,+20Mi,(+20Mi) 50Mi -> 70Mi,100Mi -> 70Mi
+networking,istio-proxy,5,10,Deployment,istio-proxy,GOOD,+25m,(+25m) 50m -> 75m,unset,+100Mi,(+100Mi) 256Mi -> 356Mi,512Mi -> 356Mi
+networking,istio-pilot,1,2,Deployment,istio-pilot,WARNING,-20m,(-20m) 100m -> 80m,unset,-50Mi,(-50Mi) 256Mi -> 206Mi,512Mi -> 206Mi
+security,vault,1,3,StatefulSet,vault,CRITICAL,+100m,(+100m) 200m -> 300m,unset,+512Mi,(+512Mi) 1024Mi -> 1536Mi,2048Mi -> 1536Mi
+,,,,,consul,OK,+30m,(+10m) 100m -> 110m,unset,+150Mi,(+50Mi) 512Mi -> 562Mi,1024Mi -> 562Mi
+database,postgresql,1,2,StatefulSet,postgresql,CRITICAL,+200m,(+200m) 500m -> 700m,unset,+1024Mi,(+1024Mi) 2048Mi -> 3072Mi,4096Mi -> 3072Mi
+database,redis,1,3,StatefulSet,redis,GOOD,+10m,(+10m) 100m -> 110m,unset,+50Mi,(+50Mi) 256Mi -> 306Mi,512Mi -> 306Mi
