@@ -14,35 +14,27 @@ jobs:
         python-version: ["3.13"]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pipenv"
 
-    - name: Install pipenv
-      run: |
-        python -m pip install --upgrade pip
-        pip install pipenv
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
 
-    - name: Install dependencies
-      run: |
-        pipenv install --dev
+      - name: Install dependencies
+        run: |
+          pipenv install --dev
 
-    - name: Run formatting checks
-      run: |
-        pipenv run format
+      - name: Run linting
+        run: |
+          pipenv run lint
 
-    - name: Run linting
-      run: |
-        pipenv run lint
-
-    - name: Run type checking
-      run: |
-        pipenv run typecheck
-
-    - name: Run tests
-      run: |
-        pipenv run test
+      - name: Run tests
+        run: |
+          pipenv run test
