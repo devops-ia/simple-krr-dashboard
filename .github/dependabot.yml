@@ -21,7 +21,7 @@ updates:
       - enhancement
       - dependency-management
     groups:
-      pip:
+      pipenv-dependencies:
         patterns:
           - "*"
   - package-ecosystem: docker
