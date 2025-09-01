@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -102,7 +102,7 @@ jobs:
           repository: ${{ env.DOCKERHUB_USER }}/${{ env.DOCKERHUB_REPO }}
 
       - name: "[GHCR] Generate artifact"
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_REPO }}
           subject-digest: ${{ steps.push.outputs.digest }}
