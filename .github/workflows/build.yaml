@@ -95,7 +95,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: "[DOCKERHUB] Update Docker registry description"
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
