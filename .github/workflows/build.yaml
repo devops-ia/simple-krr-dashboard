@@ -8,9 +8,8 @@ env:
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v*
+  release:
+    types: [published]
 
 jobs:
   release:
