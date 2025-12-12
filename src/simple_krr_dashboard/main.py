@@ -30,9 +30,14 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
 
-    # Add filter to Flask's logger
-    for handler in logging.getLogger("werkzeug").handlers:
-        handler.addFilter(ThemeRequestFilter())
+    # Configure werkzeug logger for HTTP requests
+    werkzeug_logger = logging.getLogger("werkzeug")
+    if settings.DISABLE_HTTP_LOGS:
+        werkzeug_logger.setLevel(logging.ERROR)
+    else:
+        # Add filter to exclude theme-related API requests
+        for handler in werkzeug_logger.handlers:
+            handler.addFilter(ThemeRequestFilter())
 
     app.config.update(
         APP_NAME=settings.APP_NAME,
@@ -81,6 +86,12 @@ def create_app():
 def main():
     """Run the Flask application server."""
     app = create_app()
+
+    # Disable werkzeug HTTP logs if configured
+    if settings.DISABLE_HTTP_LOGS:
+        log = logging.getLogger("werkzeug")
+        log.setLevel(logging.ERROR)
+
     app.run(host="0.0.0.0", port=5000, debug=False)
 
 

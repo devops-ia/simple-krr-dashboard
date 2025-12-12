@@ -22,7 +22,7 @@ mypy = ">=1.15.0"
 flake8 = ">=7.2.0"
 
 [requires]
-python_version = "3.13"
+python_version = "3.14"
 
 [scripts]
 start = "PYTHONPATH=$PYTHONPATH:. flask run"

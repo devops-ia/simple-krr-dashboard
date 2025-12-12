@@ -6,11 +6,14 @@ import sys
 from unittest.mock import patch
 
 import pytest
-from flask import Flask
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+# Add src to path before importing app modules
+base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
+sys.path.insert(0, base_path)
 
-from simple_krr_dashboard.main import create_app
+from flask import Flask  # noqa: E402
+
+from simple_krr_dashboard.main import create_app  # noqa: E402
 
 
 @pytest.fixture
@@ -38,18 +41,16 @@ def sample_data():
 
 def test_index_route(client, sample_data):
     """Test the index route."""
-    with patch(
-        "simple_krr_dashboard.main.create_deployment_data", return_value=sample_data
-    ):
+    mock_path = "simple_krr_dashboard.main.create_deployment_data"
+    with patch(mock_path, return_value=sample_data):
         response = client.get("/")
         assert response.status_code == 200
 
 
 def test_get_data_route(client, sample_data):
     """Test the /api/data route."""
-    with patch(
-        "simple_krr_dashboard.main.create_deployment_data", return_value=sample_data
-    ):
+    mock_path = "simple_krr_dashboard.main.create_deployment_data"
+    with patch(mock_path, return_value=sample_data):
         response = client.get("/api/data")
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -104,12 +105,14 @@ def test_toggle_theme_route_default(client):
     )
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert data["theme"] == "light"  # Default to light when theme is not provided
+    # Default to light when theme is not provided
+    assert data["theme"] == "light"
 
 
 def test_main():
     """Test the main function."""
-    with patch("simple_krr_dashboard.main.create_app") as mock_create_app, patch(
+    create_app_path = "simple_krr_dashboard.main.create_app"
+    with patch(create_app_path) as mock_create_app, patch(
         "flask.Flask.run"
     ) as mock_run:
         from simple_krr_dashboard.main import main
@@ -118,4 +121,5 @@ def test_main():
         mock_create_app.return_value = app
         main()
         mock_create_app.assert_called_once()
-        mock_run.assert_called_once_with(host="0.0.0.0", port=5000, debug=False)
+        expected_args = {"host": "0.0.0.0", "port": 5000, "debug": False}
+        mock_run.assert_called_once_with(**expected_args)

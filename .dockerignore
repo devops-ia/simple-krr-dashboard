@@ -31,6 +31,7 @@ ENV/
 .vscode/
 *.swp
 *.swo
+.DS_Store
 
 # Logs
 *.log
@@ -39,6 +40,8 @@ logs/
 # Local development
 .git/
 .gitignore
+.gitattributes
+.github/
 .pytest_cache/
 .coverage
 htmlcov/
@@ -51,9 +54,36 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
+.pre-commit-config.yaml
+.dive-ci
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Documentation
+*.md
+!README.md
+docs/
+assets/
 
 # Project specific
 examples/
+samples/
 reports/
-*.md
-!README.md
+node_modules/
+package.json
+package-lock.json
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+!docker-entrypoint.sh
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+azure-pipelines.yml

@@ -1,4 +1,4 @@
-"""Table components for the simple-krr-dashboard using standard Python libraries."""
+"""Table components for the simple-krr-dashboard using standard Python."""
 
 import csv
 import math
@@ -33,6 +33,7 @@ def read_csv_file(file_path: str) -> tuple[list[str], list[dict[str, Any]]]:
     """
     rows = []
     headers = []
+    previous_row = {}
 
     try:
         with open(file_path, encoding="utf-8") as file:
@@ -47,14 +48,29 @@ def read_csv_file(file_path: str) -> tuple[list[str], list[dict[str, Any]]]:
             for row in reader:
                 row_dict = {}
                 for i, header in enumerate(headers):
-                    if header in ["pods", "oldPods"]:  # Pods and Old Pods columns
+                    # Pods and Old Pods columns - never inherit
+                    if header in ["pods", "oldPods"]:
                         try:
-                            row_dict[header] = float(row[i]) if row[i] else None
+                            val = float(row[i]) if row[i] else None
+                            row_dict[header] = val
                         except ValueError:
                             row_dict[header] = None
                     else:
-                        row_dict[header] = row[i]
+                        # Inherit from previous row if field is empty
+                        # Apply to: Namespace, Name, Type (columns 1, 2, 5)
+                        if row[i].strip() == "" and header in [
+                            "namespace",
+                            "name",
+                            "type",
+                        ]:
+                            row_dict[header] = previous_row.get(header, "")
+                        else:
+                            row_dict[header] = row[i]
+
                 rows.append(row_dict)
+                # Update previous_row with current values for next iteration
+                previous_row = row_dict.copy()
+
     except FileNotFoundError as exc:
         raise FileNotFoundError(f"CSV file not found: {file_path}") from exc
     except Exception as exc:
@@ -79,7 +95,8 @@ def format_status_badge(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         elif severity == "WARNING":
             row["Severity"] = '<div class="badge badge-warning">WARNING</div>'
         elif severity == "CRITICAL":
-            row["Severity"] = '<div class="badge badge-critical">CRITICAL</div>'
+            badge = '<div class="badge badge-critical">CRITICAL</div>'
+            row["Severity"] = badge
         else:
             row["Severity"] = '<div class="badge badge-blue">OK</div>'
 
@@ -108,7 +125,9 @@ def format_integer(value: Any) -> str:
 
 
 def create_sortable_header(
-    column_name: str, current_sort: str | None = None, current_ascending: bool = True
+    column_name: str,
+    current_sort: str | None = None,
+    current_ascending: bool = True,
 ) -> str:
     """Create a sortable header with appropriate styling and data attributes.
 
@@ -277,7 +296,10 @@ def prepare_table_data(
     Returns:
         HTML string for the table
     """
-    headers, rows = data if isinstance(data, tuple) else read_csv_file(data)
+    if isinstance(data, tuple):
+        headers, rows = data
+    else:
+        headers, rows = read_csv_file(data)
 
     filtered_rows = filter_rows(rows, search_term, status_filter, namespace_filter)
     sorted_rows = sort_rows(filtered_rows, sort_column, sort_ascending)

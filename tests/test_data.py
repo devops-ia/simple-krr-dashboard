@@ -1,11 +1,13 @@
 """Tests for the data module."""
 
-import os
 from unittest.mock import patch
 
 import pytest
 
-from simple_krr_dashboard.data.sample_data import create_deployment_data, load_csv_data
+from simple_krr_dashboard.data.sample_data import (
+    create_deployment_data,
+    load_csv_data,
+)
 
 
 def test_load_csv_data_file_not_found():
@@ -36,9 +38,8 @@ def test_create_deployment_data_success():
         {"namespace": "kube-system", "pod": "pod2", "status": "WARNING"},
     ]
 
-    with patch(
-        "simple_krr_dashboard.data.sample_data.load_csv_data", return_value=sample_data
-    ):
+    mock_path = "simple_krr_dashboard.data.sample_data.load_csv_data"
+    with patch(mock_path, return_value=sample_data):
         data = create_deployment_data()
         assert isinstance(data, list)
         assert len(data) == 2

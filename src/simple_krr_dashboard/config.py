@@ -1,10 +1,16 @@
 """Configuration settings for the Simple KRR Dashboard."""
 
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     """Application settings."""
+
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+    )
 
     # Application settings
     APP_NAME: str = "Simple KRR Dashboard"
@@ -17,12 +23,8 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-    class Config:
-        """Pydantic configuration settings."""
-
-        env_file = ".env"
-        case_sensitive = True
+    LOG_OUTPUT_FORMAT: str = "logfmt"  # text, logfmt and json
+    DISABLE_HTTP_LOGS: bool = False
 
 
 settings = Settings()
