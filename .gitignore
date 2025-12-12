@@ -2,6 +2,7 @@
 .venv/
 venv/
 ENV/
+.coverage
 
 # Python bytecode
 __pycache__/
@@ -27,3 +28,4 @@ node_modules/
 # Project specific
 *.log
 *.table.txt
+dive

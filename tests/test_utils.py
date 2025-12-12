@@ -3,15 +3,13 @@
 import os
 import sys
 
-import pytest
+# Add src to path before importing app modules
+base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
+sys.path.insert(0, base_path)
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-
-from simple_krr_dashboard.components.table import (
+from simple_krr_dashboard.components.table import (  # noqa: E402
     convert_to_camel_case,
     format_integer,
-    format_status_badge,
-    read_csv_file,
 )
 
 

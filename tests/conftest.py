@@ -5,11 +5,12 @@ import sys
 from unittest.mock import patch
 
 import pytest
-from flask import Flask
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+# Add src to path before importing app modules
+base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
+sys.path.insert(0, base_path)
 
-from simple_krr_dashboard.main import create_app
+from simple_krr_dashboard.main import create_app  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

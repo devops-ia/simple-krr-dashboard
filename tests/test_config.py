@@ -4,11 +4,11 @@ import os
 import sys
 from unittest.mock import patch
 
-import pytest
+# Add src to path before importing app modules
+base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
+sys.path.insert(0, base_path)
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-
-from simple_krr_dashboard.config import Settings
+from simple_krr_dashboard.config import Settings  # noqa: E402
 
 
 def test_default_settings():
@@ -19,7 +19,8 @@ def test_default_settings():
     assert settings.KUBERNETES_CLUSTER_NAME is None
     assert settings.KUBERNETES_DASHBOARD_CSV_PATH == "test.csv"
     assert settings.LOG_LEVEL == "INFO"
-    assert settings.LOG_FORMAT == "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    expected_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    assert settings.LOG_FORMAT == expected_fmt
 
 
 def test_settings_from_env():
@@ -37,7 +38,8 @@ def test_settings_from_env():
         assert settings.APP_NAME == "Custom Dashboard"
         assert settings.APP_VERSION == "2.0.0"
         assert settings.KUBERNETES_CLUSTER_NAME == "test-cluster"
-        assert settings.KUBERNETES_DASHBOARD_CSV_PATH == "/custom/path/test.csv"
+        csv_path = "/custom/path/test.csv"
+        assert settings.KUBERNETES_DASHBOARD_CSV_PATH == csv_path
         assert settings.LOG_LEVEL == "DEBUG"
         assert settings.LOG_FORMAT == "%(levelname)s - %(message)s"
 
@@ -46,4 +48,5 @@ def test_settings_case_sensitive():
     """Test that settings are case sensitive."""
     with patch.dict(os.environ, {"app_name": "lowercase"}):
         settings = Settings()
-        assert settings.APP_NAME == "Test Dashboard"  # Should not be overridden
+        # Should not be overridden
+        assert settings.APP_NAME == "Test Dashboard"

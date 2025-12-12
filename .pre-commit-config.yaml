@@ -32,7 +32,7 @@ repos:
     rev: 7.2.0
     hooks:
       - id: flake8
-        args: ["--max-line-length=90", "--ignore=tests/*"]
+        args: ["--max-line-length=90", "--ignore=W503,E501"]
         additional_dependencies: [flake8-docstrings]
 
   - repo: https://github.com/PyCQA/pylint
@@ -40,7 +40,7 @@ repos:
     hooks:
       - id: pylint
         args:
-          - "--disable=no-value-for-parameter,no-member,E0401,R0913,W0612,R0917,R0903,W0718,F401,E402"
+          - "--disable=no-value-for-parameter,no-member,E0401,R0913,W0612,R0917,R0903,W0718,W0621,C0413,C0415,R0801"
           - "--ignore=.git,tests/*,venv,tests/__pycache__,migrations"
           - "--max-attributes=10"
 

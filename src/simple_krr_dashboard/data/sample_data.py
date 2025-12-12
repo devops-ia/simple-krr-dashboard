@@ -12,7 +12,8 @@ def load_csv_data():
 
     if not os.path.isabs(csv_path):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+        root = os.path.dirname(os.path.dirname(current_dir))
+        project_root = os.path.dirname(root)
         csv_path = os.path.join(project_root, csv_path)
 
     if not os.path.exists(csv_path):
