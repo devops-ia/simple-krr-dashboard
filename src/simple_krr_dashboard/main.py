@@ -60,7 +60,7 @@ def create_app():
             theme="dark",
         )
 
-    @app.route(settings.CONTEXT_ROOT + "/api/data")
+    @app.route(settings.CONTEXT_ROOT.rstrip("/") + "/api/data")
     def get_data():
         """Get deployment data from the system."""
         try:
@@ -74,7 +74,7 @@ def create_app():
             logger.error(f"Error getting deployment data: {str(e)}")
             return jsonify([])
 
-    @app.route(settings.CONTEXT_ROOT + "/api/theme", methods=["POST"])
+    @app.route(settings.CONTEXT_ROOT.rstrip("/") + "/api/theme", methods=["POST"])
     def toggle_theme():
         """Toggle between light and dark theme."""
         current_theme = request.json.get("theme", "dark")

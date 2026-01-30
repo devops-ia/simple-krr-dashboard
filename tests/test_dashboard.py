@@ -53,7 +53,7 @@ def test_get_data_route(client, sample_data):
     """Test the /api/data route."""
     mock_path = "simple_krr_dashboard.main.create_deployment_data"
     with patch(mock_path, return_value=sample_data):
-        response = client.get(settings.CONTEXT_ROOT + "/api/data")
+        response = client.get(settings.CONTEXT_ROOT.rstrip("/") + "/api/data")
         assert response.status_code == 200
         data = json.loads(response.data)
         assert isinstance(data, list)
@@ -68,7 +68,7 @@ def test_get_data_route_error(client):
         "simple_krr_dashboard.main.create_deployment_data",
         side_effect=Exception("Test error"),
     ):
-        response = client.get(settings.CONTEXT_ROOT + "/api/data")
+        response = client.get(settings.CONTEXT_ROOT.rstrip("/") + "/api/data")
         assert response.status_code == 200
         data = json.loads(response.data)
         assert isinstance(data, list)
@@ -79,7 +79,7 @@ def test_toggle_theme_route(client):
     """Test the theme toggle functionality."""
     # Test switching from dark to light
     response = client.post(
-        settings.CONTEXT_ROOT + "/api/theme",
+        settings.CONTEXT_ROOT.rstrip("/") + "/api/theme",
         json={"theme": "dark"},
         content_type="application/json",
     )
@@ -89,7 +89,7 @@ def test_toggle_theme_route(client):
 
     # Test switching from light to dark
     response = client.post(
-        settings.CONTEXT_ROOT + "/api/theme",
+        settings.CONTEXT_ROOT.rstrip("/") + "/api/theme",
         json={"theme": "light"},
         content_type="application/json",
     )
@@ -101,7 +101,7 @@ def test_toggle_theme_route(client):
 def test_toggle_theme_route_default(client):
     """Test the theme toggle functionality with default theme."""
     response = client.post(
-        settings.CONTEXT_ROOT + "/api/theme",
+        settings.CONTEXT_ROOT.rstrip("/") + "/api/theme",
         json={},
         content_type="application/json",
     )
