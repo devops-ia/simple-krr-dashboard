@@ -25,9 +25,10 @@ flake8 = ">=7.2.0"
 python_version = "3.14"
 
 [scripts]
-start = "PYTHONPATH=$PYTHONPATH:. flask run"
+start = "bash -c 'PYTHONPATH=src python -m simple_krr_dashboard.main'"
 install = "pip install -e ."
 test = "pytest"
 lint = "flake8 src/ tests/"
-format = "black src/ tests/ && isort src/ tests/"
+format = "black src/ tests/"
+sort = "isort src/ tests/"
 typecheck = "mypy src/ tests/"

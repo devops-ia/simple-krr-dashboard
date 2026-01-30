@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     # Application settings
     APP_NAME: str = "Simple KRR Dashboard"
+    APP_ROOT: str = "/"
     APP_VERSION: str = "1.0.0"
 
     # Kubernetes settings

@@ -4,10 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from simple_krr_dashboard.data.sample_data import (
-    create_deployment_data,
-    load_csv_data,
-)
+from simple_krr_dashboard.data.sample_data import create_deployment_data, load_csv_data
 
 
 def test_load_csv_data_file_not_found():
