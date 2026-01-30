@@ -7,6 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
+from src.simple_krr_dashboard.config import settings
+
 # Add src to path before importing app modules
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
 sys.path.insert(0, base_path)
@@ -43,7 +45,7 @@ def test_index_route(client, sample_data):
     """Test the index route."""
     mock_path = "simple_krr_dashboard.main.create_deployment_data"
     with patch(mock_path, return_value=sample_data):
-        response = client.get("/")
+        response = client.get(settings.CONTEXT_ROOT)
         assert response.status_code == 200
 
 
@@ -51,7 +53,7 @@ def test_get_data_route(client, sample_data):
     """Test the /api/data route."""
     mock_path = "simple_krr_dashboard.main.create_deployment_data"
     with patch(mock_path, return_value=sample_data):
-        response = client.get("/api/data")
+        response = client.get(settings.CONTEXT_ROOT + "/api/data")
         assert response.status_code == 200
         data = json.loads(response.data)
         assert isinstance(data, list)
@@ -66,7 +68,7 @@ def test_get_data_route_error(client):
         "simple_krr_dashboard.main.create_deployment_data",
         side_effect=Exception("Test error"),
     ):
-        response = client.get("/api/data")
+        response = client.get(settings.CONTEXT_ROOT + "/api/data")
         assert response.status_code == 200
         data = json.loads(response.data)
         assert isinstance(data, list)
@@ -77,7 +79,7 @@ def test_toggle_theme_route(client):
     """Test the theme toggle functionality."""
     # Test switching from dark to light
     response = client.post(
-        "/api/theme",
+        settings.CONTEXT_ROOT + "/api/theme",
         json={"theme": "dark"},
         content_type="application/json",
     )
@@ -87,7 +89,7 @@ def test_toggle_theme_route(client):
 
     # Test switching from light to dark
     response = client.post(
-        "/api/theme",
+        settings.CONTEXT_ROOT + "/api/theme",
         json={"theme": "light"},
         content_type="application/json",
     )
@@ -99,7 +101,7 @@ def test_toggle_theme_route(client):
 def test_toggle_theme_route_default(client):
     """Test the theme toggle functionality with default theme."""
     response = client.post(
-        "/api/theme",
+        settings.CONTEXT_ROOT + "/api/theme",
         json={},
         content_type="application/json",
     )

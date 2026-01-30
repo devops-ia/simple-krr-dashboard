@@ -21,6 +21,7 @@ def test_default_settings():
     assert settings.LOG_LEVEL == "INFO"
     expected_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     assert settings.LOG_FORMAT == expected_fmt
+    assert settings.CONTEXT_ROOT == "/"
 
 
 def test_settings_from_env():
@@ -32,6 +33,7 @@ def test_settings_from_env():
         "KUBERNETES_DASHBOARD_CSV_PATH": "/custom/path/test.csv",
         "LOG_LEVEL": "DEBUG",
         "LOG_FORMAT": "%(levelname)s - %(message)s",
+        "CONTEXT_ROOT": "/testpath",
     }
     with patch.dict(os.environ, env_vars):
         settings = Settings()
@@ -42,6 +44,7 @@ def test_settings_from_env():
         assert settings.KUBERNETES_DASHBOARD_CSV_PATH == csv_path
         assert settings.LOG_LEVEL == "DEBUG"
         assert settings.LOG_FORMAT == "%(levelname)s - %(message)s"
+        assert settings.CONTEXT_ROOT == "/testpath"
 
 
 def test_settings_case_sensitive():

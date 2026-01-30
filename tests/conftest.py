@@ -23,6 +23,7 @@ def mock_env():
         "CACHE_ENABLED": "true",
         "CACHE_TTL": "300",
         "KUBERNETES_DASHBOARD_CSV_PATH": "test.csv",
+        "CONTEXT_ROOT": "/",
     }
     with patch.dict(os.environ, env_vars):
         yield env_vars
