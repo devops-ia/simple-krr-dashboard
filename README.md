@@ -52,10 +52,10 @@ krr simple --fileoutput report.table.csv --use-oomkill-data --formatter csv
 2. Run the container:
 
    ```bash
-   docker run -v $(pwd)/reports:/reports -p 80:80 simple-krr-dashboard
+   docker run -v $(pwd)/reports:/reports -p 8080:8080 simple-krr-dashboard
    ```
 
-The dashboard will be available at http://localhost:80
+The dashboard will be available at http://localhost:8080
 
 ## Usage
 
@@ -75,7 +75,7 @@ PYTHONPATH=src python src/simple_krr_dashboard/main.py
 
 ### Docker Usage
 
-The Docker container exposes port `80` for the web interface. You can access the dashboard by opening your web browser and navigating to http://localhost:80
+The Docker container exposes port `8080` for the web interface (Gunicorn). You can access the dashboard by opening your web browser and navigating to http://localhost:8080
 
 ## Development Commands
 
@@ -100,31 +100,32 @@ The following environment variables can be used to configure the application:
 | Variable                        | Description                                           | Default                                                | Required |
 | :------------------------------ | :---------------------------------------------------- | :----------------------------------------------------- | :------- |
 | `APP_NAME`                      | Name of the application                               | "Simple KRR Dashboard"                                 | No       |
+| `APP_ROOT`                      | URL prefix for the application (context root)         | "/"                                                    | No       |
 | `APP_VERSION`                   | Version of the application                            | "1.0.0"                                                | No       |
 | `KUBERNETES_CLUSTER_NAME`       | Name of the Kubernetes cluster                        | None                                                   | No       |
 | `KUBERNETES_DASHBOARD_CSV_PATH` | Path to the CSV file containing Kubernetes data       | "/reports/report.table.csv"                            | No       |
 | `LOG_LEVEL`                     | Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL) | "INFO"                                                 | No       |
 | `LOG_FORMAT`                    | Format string for log messages                        | "%(asctime)s - %(name)s - %(levelname)s - %(message)s" | No       |
-| `LOG_OUTPUT_FORMAT`             | Log output format (text, logfmt, json)                | "text"                                                 | No       |
+| `LOG_OUTPUT_FORMAT`             | Log output format (text, logfmt)                      | "text"                                                 | No       |
 | `DISABLE_HTTP_LOGS`             | Disable HTTP access logs from Gunicorn                | "false"                                                | No       |
 
 ### Logging Configuration
 
 The application uses two types of logs:
 
-1. **Application Logs**: Controlled by `LOG_LEVEL` (DEBUG, INFO, WARNING, ERROR, CRITICAL) and `LOG_OUTPUT_FORMAT` (text, logfmt, json)
+1. **Application Logs**: Controlled by `LOG_LEVEL` (DEBUG, INFO, WARNING, ERROR, CRITICAL) and `LOG_OUTPUT_FORMAT` (text, logfmt)
 2. **HTTP Access Logs**: Controlled by `DISABLE_HTTP_LOGS` (true/false)
 
 #### Log Output Formats
 
-The application supports three log output formats:
+The application supports two log output formats:
 
 ##### Text Format (Default)
 
 Human-readable text format suitable for development and debugging.
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_OUTPUT_FORMAT=text simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e LOG_OUTPUT_FORMAT=text simple-krr-dashboard
 ```
 
 **Example output:**
@@ -139,7 +140,7 @@ docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_OUTPUT_FORMAT=text simple-
 Machine-readable key-value format, ideal for log aggregation systems like Grafana Loki.
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_OUTPUT_FORMAT=logfmt simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e LOG_OUTPUT_FORMAT=logfmt simple-krr-dashboard
 ```
 
 **Example output:**
@@ -149,49 +150,41 @@ time=2025-12-12T20:30:45.123456 level=info logger=simple_krr_dashboard.main msg=
 time=2025-12-12T20:30:45.456789 level=warning logger=simple_krr_dashboard.data msg="No cluster name configured"
 ```
 
-##### JSON Format
-
-Structured JSON output, perfect for log parsing and analysis tools like ELK stack, Splunk, or cloud logging services.
-
-```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_OUTPUT_FORMAT=json simple-krr-dashboard
-```
-
-**Example output:**
-
-```json
-{"time": "2025-12-12T20:30:45.123456", "level": "info", "logger": "simple_krr_dashboard.main", "message": "Starting application"}
-{"time": "2025-12-12T20:30:45.456789", "level": "warning", "logger": "simple_krr_dashboard.data", "message": "No cluster name configured"}
-```
-
 #### Configuration Examples
 
 **Disable HTTP access logs** (recommended for production):
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 -e DISABLE_HTTP_LOGS=true simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e DISABLE_HTTP_LOGS=true simple-krr-dashboard
 ```
 
 **Enable HTTP access logs** (useful for debugging):
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 -e DISABLE_HTTP_LOGS=false simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e DISABLE_HTTP_LOGS=false simple-krr-dashboard
 ```
 
 **Change application log level**:
 
 ```bash
 # Show only errors
-docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_LEVEL=ERROR simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e LOG_LEVEL=ERROR simple-krr-dashboard
 
 # Show debug information
-docker run -v $(pwd)/reports:/reports -p 80:80 -e LOG_LEVEL=DEBUG simple-krr-dashboard
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e LOG_LEVEL=DEBUG simple-krr-dashboard
+```
+
+**Serve the dashboard under a custom path prefix**:
+
+```bash
+# Dashboard available at http://localhost:8080/dashboard/
+docker run -v $(pwd)/reports:/reports -p 8080:8080 -e APP_ROOT=/dashboard simple-krr-dashboard
 ```
 
 **Production-ready configuration with JSON logs**:
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 \
+docker run -v $(pwd)/reports:/reports -p 8080:8080 \
   -e LOG_LEVEL=INFO \
   -e LOG_OUTPUT_FORMAT=json \
   -e DISABLE_HTTP_LOGS=true \
@@ -201,7 +194,7 @@ docker run -v $(pwd)/reports:/reports -p 80:80 \
 **Development configuration with detailed text logs**:
 
 ```bash
-docker run -v $(pwd)/reports:/reports -p 80:80 \
+docker run -v $(pwd)/reports:/reports -p 8080:8080 \
   -e LOG_LEVEL=DEBUG \
   -e LOG_OUTPUT_FORMAT=text \
   -e DISABLE_HTTP_LOGS=false \

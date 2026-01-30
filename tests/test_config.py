@@ -50,3 +50,23 @@ def test_settings_case_sensitive():
         settings = Settings()
         # Should not be overridden
         assert settings.APP_NAME == "Test Dashboard"
+
+
+def test_app_root_default():
+    """Test that APP_ROOT defaults to /."""
+    settings = Settings()
+    assert settings.APP_ROOT == "/"
+
+
+def test_app_root_from_env():
+    """Test that APP_ROOT can be set via environment variable."""
+    with patch.dict(os.environ, {"APP_ROOT": "/dashboard"}):
+        settings = Settings()
+        assert settings.APP_ROOT == "/dashboard"
+
+
+def test_app_root_case_sensitive():
+    """Test that APP_ROOT is case sensitive."""
+    with patch.dict(os.environ, {"app_root": "/lowercase"}):
+        settings = Settings()
+        assert settings.APP_ROOT == "/"

@@ -2,13 +2,15 @@
 
 import logging
 
-from flask import Flask, jsonify, render_template, request
+from flask import Blueprint, Flask, jsonify, render_template, request
 
 from simple_krr_dashboard.config import settings
 from simple_krr_dashboard.data.sample_data import create_deployment_data
 from simple_krr_dashboard.utils.logging import get_logger
 
 logger = get_logger(__name__)
+
+dashboard = Blueprint("dashboard", __name__)
 
 
 class ThemeRequestFilter(logging.Filter):
@@ -24,6 +26,41 @@ class ThemeRequestFilter(logging.Filter):
             bool: True if the record should be logged, False otherwise
         """
         return "/api/theme" not in record.getMessage()
+
+
+@dashboard.route("/")
+def index():
+    """Render the main dashboard page."""
+    return render_template(
+        "index.html",
+        app_name=settings.APP_NAME,
+        app_version=settings.APP_VERSION,
+        kubernetes_cluster_name=settings.KUBERNETES_CLUSTER_NAME,
+        theme="dark",
+    )
+
+
+@dashboard.route("/api/data")
+def get_data():
+    """Get deployment data from the system."""
+    try:
+        data = create_deployment_data()
+        for row in data:
+            for key in row:
+                if row[key] is None:
+                    row[key] = ""
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Error getting deployment data: {str(e)}")
+        return jsonify([])
+
+
+@dashboard.route("/api/theme", methods=["POST"])
+def toggle_theme():
+    """Toggle between light and dark theme."""
+    current_theme = request.json.get("theme", "dark")
+    new_theme = "light" if current_theme == "dark" else "dark"
+    return jsonify({"theme": new_theme})
 
 
 def create_app():
@@ -48,37 +85,12 @@ def create_app():
         LOG_FORMAT=settings.LOG_FORMAT,
     )
 
-    @app.route("/")
-    def index():
-        """Render the main dashboard page."""
-        return render_template(
-            "index.html",
-            app_name=settings.APP_NAME,
-            app_version=settings.APP_VERSION,
-            kubernetes_cluster_name=settings.KUBERNETES_CLUSTER_NAME,
-            theme="dark",
-        )
+    # Normalize context root: ensure leading slash, strip trailing slash
+    prefix = "/" + settings.APP_ROOT.strip("/")
+    if prefix != "/":
+        prefix = prefix.rstrip("/")
 
-    @app.route("/api/data")
-    def get_data():
-        """Get deployment data from the system."""
-        try:
-            data = create_deployment_data()
-            for row in data:
-                for key in row:
-                    if row[key] is None:
-                        row[key] = ""
-            return jsonify(data)
-        except Exception as e:
-            logger.error(f"Error getting deployment data: {str(e)}")
-            return jsonify([])
-
-    @app.route("/api/theme", methods=["POST"])
-    def toggle_theme():
-        """Toggle between light and dark theme."""
-        current_theme = request.json.get("theme", "dark")
-        new_theme = "light" if current_theme == "dark" else "dark"
-        return jsonify({"theme": new_theme})
+    app.register_blueprint(dashboard, url_prefix=prefix)
 
     return app
 
@@ -92,7 +104,7 @@ def main():
         log = logging.getLogger("werkzeug")
         log.setLevel(logging.ERROR)
 
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=8080, debug=False)
 
 
 if __name__ == "__main__":

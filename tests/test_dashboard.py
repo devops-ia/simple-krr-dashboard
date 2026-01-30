@@ -121,5 +121,5 @@ def test_main():
         mock_create_app.return_value = app
         main()
         mock_create_app.assert_called_once()
-        expected_args = {"host": "0.0.0.0", "port": 5000, "debug": False}
+        expected_args = {"host": "0.0.0.0", "port": 8080, "debug": False}
         mock_run.assert_called_once_with(**expected_args)

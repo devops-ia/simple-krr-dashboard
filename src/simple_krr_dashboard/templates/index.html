@@ -89,7 +89,7 @@
 
         async function fetchData() {
             try {
-                const response = await fetch('/api/data');
+                const response = await fetch('{{ url_for("dashboard.get_data") }}');
                 data = await response.json();
                 updateTable();
                 updateNamespaceFilter();
@@ -201,7 +201,7 @@
 
         async function toggleTheme() {
             try {
-                const response = await fetch('/api/theme', {
+                const response = await fetch('{{ url_for("dashboard.toggle_theme") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
