@@ -98,7 +98,7 @@ pipenv run typecheck
 The following environment variables can be used to configure the application:
 
 | Variable                        | Description                                           | Default                                                | Required |
-| :------------------------------ | :---------------------------------------------------- | :----------------------------------------------------- | :------- |
+|:--------------------------------|:------------------------------------------------------|:-------------------------------------------------------| :------- |
 | `APP_NAME`                      | Name of the application                               | "Simple KRR Dashboard"                                 | No       |
 | `APP_VERSION`                   | Version of the application                            | "1.0.0"                                                | No       |
 | `KUBERNETES_CLUSTER_NAME`       | Name of the Kubernetes cluster                        | None                                                   | No       |
@@ -107,6 +107,7 @@ The following environment variables can be used to configure the application:
 | `LOG_FORMAT`                    | Format string for log messages                        | "%(asctime)s - %(name)s - %(levelname)s - %(message)s" | No       |
 | `LOG_OUTPUT_FORMAT`             | Log output format (text, logfmt, json)                | "text"                                                 | No       |
 | `DISABLE_HTTP_LOGS`             | Disable HTTP access logs from Gunicorn                | "false"                                                | No       |
+| `CONTEXT_ROOT`                  | Contex-root of the application                        | "/"                                                    | No       |
 
 ### Logging Configuration
 

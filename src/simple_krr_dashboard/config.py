@@ -26,5 +26,8 @@ class Settings(BaseSettings):
     LOG_OUTPUT_FORMAT: str = "logfmt"  # text, logfmt and json
     DISABLE_HTTP_LOGS: bool = False
 
+    # Context-root
+    CONTEXT_ROOT: str = "/"
+
 
 settings = Settings()
