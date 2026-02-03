@@ -65,7 +65,15 @@ def toggle_theme():
 
 def create_app():
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    # Normalize context root: ensure leading slash, strip trailing slash
+    prefix = "/" + settings.APP_ROOT.strip("/")
+    if prefix != "/":
+        prefix = prefix.rstrip("/")
+
+    app = Flask(
+        __name__,
+        static_url_path=f"{prefix}/static" if prefix != "/" else "/static",
+    )
 
     # Configure werkzeug logger for HTTP requests
     werkzeug_logger = logging.getLogger("werkzeug")
@@ -84,11 +92,6 @@ def create_app():
         LOG_LEVEL=settings.LOG_LEVEL,
         LOG_FORMAT=settings.LOG_FORMAT,
     )
-
-    # Normalize context root: ensure leading slash, strip trailing slash
-    prefix = "/" + settings.APP_ROOT.strip("/")
-    if prefix != "/":
-        prefix = prefix.rstrip("/")
 
     app.register_blueprint(dashboard, url_prefix=prefix)
 
