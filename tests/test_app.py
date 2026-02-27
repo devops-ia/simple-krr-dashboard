@@ -118,3 +118,11 @@ def test_invalid_theme_request(client):
     data = json.loads(response.data)
     # Default to light when theme is not provided
     assert data["theme"] == "light"
+
+
+def test_healthz_route(client):
+    """Test the /healthz liveness endpoint."""
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["status"] == "ok"
