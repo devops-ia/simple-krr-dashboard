@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+import simple_krr_dashboard.data.sample_data as sample_data_module
 from simple_krr_dashboard.data.sample_data import create_deployment_data, load_csv_data
 
 
@@ -42,3 +43,15 @@ def test_create_deployment_data_success():
         assert len(data) == 2
         assert data[0]["namespace"] == "default"
         assert data[1]["namespace"] == "kube-system"
+
+
+def test_create_deployment_data_returns_cache_on_failure(monkeypatch):
+    """Test that cached data is served when CSV read fails (e.g. during kubectl cp)."""
+    cached = [{"namespace": "default", "pod": "pod1", "status": "GOOD"}]
+    monkeypatch.setattr(sample_data_module, "_cached_data", cached)
+    with patch(
+        "simple_krr_dashboard.data.sample_data.load_csv_data",
+        side_effect=Exception("file truncated during write"),
+    ):
+        data = create_deployment_data()
+        assert data == cached

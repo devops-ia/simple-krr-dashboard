@@ -63,6 +63,12 @@ def toggle_theme():
     return jsonify({"theme": new_theme})
 
 
+@dashboard.route("/healthz")
+def healthz():
+    """Liveness health check endpoint."""
+    return jsonify({"status": "ok"}), 200
+
+
 def create_app():
     """Create and configure the Flask application."""
     # Normalize context root: ensure leading slash, strip trailing slash
