@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
     uses: devops-ia/.github/.github/workflows/docker-build.yml@main
     with:
       dockerhub_repo: simple-krr-dashboard
