@@ -1,4 +1,4 @@
-name: Release simple-krr-dashboard
+name: Release
 
 on:
   workflow_dispatch:
