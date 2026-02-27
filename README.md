@@ -252,7 +252,3 @@ When adding new features, please include corresponding tests. The project follow
 ## Contributing
 
 Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for details on our code of conduct and the process for submitting pull requests.
-
----
-
-Developed with ❤️ by [@ialejandro](https://github.com/ialejandro) and [Cursor.com](https://cursor.com)
