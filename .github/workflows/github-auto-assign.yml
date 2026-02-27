@@ -10,6 +10,8 @@ jobs:
   auto-assign:
     permissions:
       contents: read
+      issues: write
+      pull-requests: write
     uses: devops-ia/.github/.github/workflows/github-auto-assign.yml@main
     with:
       teams: devops-ia

@@ -8,7 +8,11 @@ on:
 jobs:
   build:
     permissions:
-      contents: read
+      artifact-metadata: write
+      attestations: write
+      contents: write
+      id-token: write
+      packages: write
     uses: devops-ia/.github/.github/workflows/docker-build.yml@main
     with:
       dockerhub_repo: simple-krr-dashboard
