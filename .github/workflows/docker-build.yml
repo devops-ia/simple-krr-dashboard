@@ -1,0 +1,17 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    uses: devops-ia/.github/.github/workflows/docker-build.yml@main
+    with:
+      dockerhub_repo: simple-krr-dashboard
+      image_title: Simple KRR Dashboard
+      image_description: Simple KRR Dashboard for Kubernetes resource recommendations
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
