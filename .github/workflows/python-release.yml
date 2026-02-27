@@ -1,4 +1,4 @@
-name: Release
+name: Release Python
 
 on:
   workflow_dispatch:
@@ -9,6 +9,8 @@ on:
       - src/**
       - Pipfile
       - Dockerfile
+
+permissions: {}
 
 jobs:
   release:
