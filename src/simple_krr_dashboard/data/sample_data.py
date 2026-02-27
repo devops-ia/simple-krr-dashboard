@@ -1,9 +1,16 @@
 """Sample data for the simple-krr-dashboard."""
 
 import os
+import threading
 
 from simple_krr_dashboard.components.table import read_csv_file
 from simple_krr_dashboard.config import settings
+from simple_krr_dashboard.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
+_cache_lock = threading.Lock()
+_cached_data: list[dict] = []
 
 
 def load_csv_data():
@@ -24,8 +31,13 @@ def load_csv_data():
 
 
 def create_deployment_data():
-    """Create deployment data from CSV."""
+    """Create deployment data from CSV, with fallback to cached data on read failure."""
     try:
-        return load_csv_data()
-    except FileNotFoundError:
-        return []
+        data = load_csv_data()
+        with _cache_lock:
+            _cached_data[:] = data
+        return data
+    except Exception as e:
+        logger.warning("Failed to load CSV data, returning cached data: %s", e)
+        with _cache_lock:
+            return list(_cached_data)
