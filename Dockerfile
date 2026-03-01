@@ -12,7 +12,7 @@ COPY Pipfile Pipfile.lock ./
 RUN pip install --no-cache-dir pipenv && \
     pipenv install --system --deploy --ignore-pipfile
 
-FROM alpine/kubectl:1.35.1 AS kubectl
+FROM alpine/kubectl:1.35.2 AS kubectl
 
 FROM python:3.14-alpine
 
