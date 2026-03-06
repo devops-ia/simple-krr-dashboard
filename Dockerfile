@@ -12,8 +12,6 @@ COPY Pipfile Pipfile.lock ./
 RUN pip install --no-cache-dir pipenv && \
     pipenv install --system --deploy --ignore-pipfile
 
-FROM alpine/kubectl:1.35.2 AS kubectl
-
 FROM python:3.14-alpine
 
 LABEL org.opencontainers.image.title="Simple KRR Dashboard" \
@@ -28,7 +26,6 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/
 COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 COPY --from=builder /usr/local/bin/gunicorn /usr/local/bin/gunicorn
 COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
