@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 flask = ">=3.0.2"
 pydantic = ">=2.13.4"
-pydantic-settings = ">=2.14.1"
+pydantic-settings = ">=2.14.2"
 python-dotenv = ">=1.1.0"
 gunicorn = ">=26.0.0"
 numpy = ">=2.4.6"
