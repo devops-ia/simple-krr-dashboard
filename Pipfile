@@ -9,16 +9,16 @@ pydantic = ">=2.13.4"
 pydantic-settings = ">=2.14.2"
 python-dotenv = ">=1.1.0"
 gunicorn = ">=26.0.0"
-numpy = ">=2.5.0"
+numpy = ">=2.5.1"
 
 [dev-packages]
-setuptools = ">=78.1.0"
+setuptools = ">=83.0.0"
 wheel = ">=0.47.0"
 pytest = ">=9.1.1"
 pytest-cov = ">=4.1.0"
 black = ">=26.5.1"
 isort = ">=6.0.1"
-mypy = ">=2.1.0"
+mypy = ">=2.3.0"
 flake8 = ">=7.2.0"
 
 [requires]
