@@ -5,10 +5,10 @@ name = "pypi"
 
 [packages]
 flask = ">=3.0.2"
-pydantic = ">=2.13.4"
+pydantic = ">=2.13.5"
 pydantic-settings = ">=2.15.0"
 python-dotenv = ">=1.1.0"
-gunicorn = ">=26.1.0"
+gunicorn = ">=26.2.0"
 numpy = ">=2.5.2"
 
 [dev-packages]
@@ -17,7 +17,7 @@ wheel = ">=0.48.0"
 pytest = ">=9.1.1"
 pytest-cov = ">=4.1.0"
 black = ">=26.5.1"
-isort = ">=6.0.1"
+isort = ">=9.0.1"
 mypy = ">=2.3.1"
 flake8 = ">=7.2.0"
 
